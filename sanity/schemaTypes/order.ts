@@ -1,6 +1,6 @@
 // schemas/order.ts
-import { defineType } from "sanity";
-export const categorySchema = defineType({
+
+export const orderSchema = {
   name: 'order',
   title: 'Order',
   type: 'document',
@@ -59,4 +59,4 @@ export const categorySchema = defineType({
       type: 'datetime',
     },
   ],
-})
+}
