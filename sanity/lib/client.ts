@@ -12,9 +12,9 @@ if (!process.env.NEXT_PUBLIC_SANITY_DATASET) {
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  useCdn: false, // Set to false since we'll be querying draft content
+  useCdn: false,
   apiVersion: '2024-01-30',
-  token: process.env.NEXT_PUBLIC_SANITY_AUTH_TOKEN // Include token for write operations
+  token: process.env.NEXT_PUBLIC_SANITY_AUTH_TOKEN
 })
 
 export async function getProducts() {
@@ -59,5 +59,4 @@ export async function getOrderById(orderId: string) {
   )
   return order
 }
-
 export { createClient }
