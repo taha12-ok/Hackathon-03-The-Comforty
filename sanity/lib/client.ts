@@ -14,7 +14,7 @@ export const client = createClient({
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
   useCdn: false, // Set to false since we'll be querying draft content
   apiVersion: '2024-01-30',
-  token: process.env.SANITY_SECRET_TOKEN // Include token for write operations
+  token: process.env.NEXT_PUBLIC_SANITY_AUTH_TOKEN // Include token for write operations
 })
 
 export async function getProducts() {
