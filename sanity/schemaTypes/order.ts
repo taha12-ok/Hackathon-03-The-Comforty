@@ -1,7 +1,7 @@
-// schemas/order.js
+// schemas/order.ts
 export default {
   name: 'order',
-  title: 'Orders',
+  title: 'Order',
   type: 'document',
   fields: [
     {
@@ -21,45 +21,41 @@ export default {
         { name: 'city', type: 'string' },
         { name: 'country', type: 'string' },
         { name: 'postalCode', type: 'string' },
-        { name: 'paymentMethod', type: 'string' }
-      ]
+        { name: 'paymentMethod', type: 'string' },
+      ],
     },
     {
       name: 'items',
-      title: 'Order Items',
+      title: 'Items',
       type: 'array',
       of: [{
         type: 'object',
+        name: 'orderItem',
         fields: [
           { name: 'productId', type: 'string' },
           { name: 'title', type: 'string' },
           { name: 'quantity', type: 'number' },
-          { name: 'price', type: 'number' }
-        ]
-      }]
+          { name: 'price', type: 'number' },
+        ],
+      }],
     },
     {
       name: 'total',
-      title: 'Total Amount',
-      type: 'number'
+      title: 'Total',
+      type: 'number',
     },
     {
       name: 'status',
-      title: 'Order Status',
+      title: 'Status',
       type: 'string',
       options: {
-        list: [
-          'pending',
-          'processing',
-          'completed',
-          'cancelled'
-        ]
-      }
+        list: ['pending', 'processing', 'completed', 'cancelled'],
+      },
     },
     {
       name: 'createdAt',
       title: 'Created At',
-      type: 'datetime'
-    }
-  ]
+      type: 'datetime',
+    },
+  ],
 }
