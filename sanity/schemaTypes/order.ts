@@ -1,5 +1,5 @@
 // schemas/order.ts
-export default {
+export const categorySchema = defineType{
   name: 'order',
   title: 'Order',
   type: 'document',
