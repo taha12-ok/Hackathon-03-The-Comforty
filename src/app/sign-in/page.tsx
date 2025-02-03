@@ -24,6 +24,10 @@ export default function Page() {
                 footer: "text-sm",
               },
             }}
+            redirectUrl="/dashboard"
+            afterSignInUrl="/dashboard"
+            routing="path"
+            path="/sign-in"
           />
         </div>
       </div>
