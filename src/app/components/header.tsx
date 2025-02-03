@@ -5,13 +5,15 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { useCart } from "../../../contexts/CartContext"
 import { FaShoppingCart, FaUserCircle } from "react-icons/fa"
-import { useClerk, SignedIn, SignedOut } from "@clerk/nextjs"
+import { UserButton, useUser } from "@clerk/nextjs"
+import { IoMenu } from "react-icons/io5"
+import { RxCross2 } from "react-icons/rx"
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { cartCount } = useCart()
-  const { signOut } = useClerk()
+  const { isSignedIn } = useUser()
 
   const navLinks = [
     { name: 'Home', path: '/home' },
@@ -52,30 +54,12 @@ export default function Header() {
 
         <div className="bg-[#F0F2F3]">
           <div className="flex flex-wrap justify-between items-center py-2 sm:py-4 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            {/* Updated Logo Section with Link */}
             <Link href="/home" className="flex items-center">
               <Image src="/logo.png" alt="Logo" width={32} height={32} className="sm:w-[40px] sm:h-[40px]" />
               <span className="text-xl sm:text-2xl font-bold ml-2 text-gray-800">Comforty</span>
             </Link>
 
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <SignedIn>
-                <button
-                  onClick={() => signOut()}
-                  className="flex items-center bg-[#00B4B4] text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#009999] transition-colors text-sm sm:text-base"
-                >
-                  <FaUserCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Sign Out</span>
-                </button>
-              </SignedIn>
-              <SignedOut>
-                <Link href="/sign-in">
-                  <button className="flex items-center bg-[#00B4B4] text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#009999] transition-colors text-sm sm:text-base">
-                    <FaUserCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Sign In</span>
-                  </button>
-                </Link>
-              </SignedOut>
               <Link href="/cart">
                 <button className="flex items-center bg-white text-black px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base">
                   <FaShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-black mr-1 sm:mr-2" />
@@ -87,6 +71,17 @@ export default function Header() {
                   )}
                 </button>
               </Link>
+              
+              {isSignedIn ? (
+                <UserButton />
+              ) : (
+                <Link href="/sign-in">
+                  <button className="flex items-center bg-[#00B4B4] text-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-[#009999] transition-colors text-sm sm:text-base">
+                    <FaUserCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Sign In</span>
+                  </button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -100,9 +95,9 @@ export default function Header() {
                 aria-label={menuOpen ? 'Close Menu' : 'Open Menu'}
               >
                 {menuOpen ? (
-                  <Image src="/closemenu.png" alt="Close Menu" width={20} height={20} className="sm:w-[24px] sm:h-[24px]" />
+                  <RxCross2 className="text-3xl" />
                 ) : (
-                  <Image src="/openmenu.png" alt="Open Menu" width={20} height={20} className="sm:w-[24px] sm:h-[24px]" />
+                  <IoMenu className="text-3xl" />
                 )}
               </button>
 
@@ -133,7 +128,6 @@ export default function Header() {
                 <div className="h-full overflow-y-auto">
                   <div className="px-4 py-4">
                     <div className="flex justify-between items-center mb-8">
-                      {/* Updated Mobile Logo Section with Link */}
                       <Link href="/home" className="flex items-center">
                         <Image src="/logo.png" alt="Logo" width={32} height={32} className="sm:w-[40px] sm:h-[40px]" />
                         <span className="text-xl sm:text-2xl font-bold ml-2 text-gray-800">Comforty</span>
@@ -142,7 +136,7 @@ export default function Header() {
                         onClick={() => setMenuOpen(false)}
                         className="p-2 text-gray-800 hover:text-gray-600 transition-colors"
                       >
-                        <Image src="/closemenu.png" alt="Close Menu" width={20} height={20} className="sm:w-[24px] sm:h-[24px]" />
+                        <RxCross2 className="text-3xl" />
                       </button>
                     </div>
 
