@@ -23,12 +23,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (isLoaded && !isSignedIn) {
-      router.push("/sign-in")
-    }
-  }, [isLoaded, isSignedIn, router])
-
+  // Update user data if they're signed in
   useEffect(() => {
     if (user) {
       setFormData((prevState) => ({
@@ -70,7 +65,7 @@ export default function CheckoutPage() {
     })
   }
 
-  if (!isLoaded || !isSignedIn) {
+  if (!isLoaded) {
     return null // or a loading spinner
   }
 
@@ -238,4 +233,3 @@ export default function CheckoutPage() {
     </div>
   )
 }
-
