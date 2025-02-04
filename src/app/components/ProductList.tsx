@@ -16,10 +16,7 @@ export default function ProductList({ products }: ProductListProps) {
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault()
-    e.stopPropagation()
-
+  const handleAddToCart = (product: Product) => {
     const imageUrl = product.image?.asset?.url || product.imageUrl || ""
 
     addToCart({
@@ -53,7 +50,8 @@ export default function ProductList({ products }: ProductListProps) {
         {products.map((product) => (
           <div
             key={product._id}
-            className="bg-white rounded-lg mb-4 xs:mb-6 flex flex-col transform transition-all duration-300 hover:shadow-lg"
+            onClick={() => handleAddToCart(product)}
+            className="bg-white rounded-lg mb-4 xs:mb-6 flex flex-col transform transition-all duration-300 hover:shadow-lg cursor-pointer"
           >
             <div className="relative aspect-square xs:aspect-[4/5] w-full overflow-hidden rounded-lg">
               <Image
@@ -79,7 +77,6 @@ export default function ProductList({ products }: ProductListProps) {
               <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 mt-2">
                 <p className="text-[#00B4B4] font-bold text-sm sm:text-base">${product.price}</p>
                 <button
-                  onClick={(e) => handleAddToCart(e, product)}
                   className="w-full xs:w-auto bg-white text-gray-500 px-2 py-1.5 rounded text-xs sm:text-sm flex items-center justify-center hover:bg-[#009999] hover:text-white transition-all duration-300 border border-gray-200"
                 >
                   <FaShoppingCart className="mr-1.5" />
@@ -102,4 +99,3 @@ export default function ProductList({ products }: ProductListProps) {
     </div>
   )
 }
-
