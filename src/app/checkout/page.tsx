@@ -9,7 +9,7 @@ import { useUser } from "@clerk/nextjs"
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart } = useCart()
   const router = useRouter()
-  const { isLoaded, isSignedIn, user } = useUser()
+  const { isLoaded, user } = useUser()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
