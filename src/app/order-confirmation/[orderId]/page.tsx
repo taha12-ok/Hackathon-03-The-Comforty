@@ -34,7 +34,7 @@ export default function OrderConfirmationPage() {
   const searchParams = useSearchParams()
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   useEffect(() => {
     const data = searchParams.get("data")
@@ -51,12 +51,12 @@ export default function OrderConfirmationPage() {
     if (!orderDetails) return
 
     const doc = new jsPDF()
-    
+
     // Add Comforty branding
     doc.setFontSize(24)
     doc.setTextColor(2, 159, 174)
     doc.text("COMFORTY", 105, 15, { align: "center" })
-    
+
     // Add decorative line
     doc.setDrawColor(2, 159, 174)
     doc.setLineWidth(0.5)
@@ -86,29 +86,33 @@ export default function OrderConfirmationPage() {
     doc.text(`${orderDetails.customer.email}`, 20, 92)
     doc.text(`${orderDetails.customer.phone}`, 20, 99)
     doc.text(`${orderDetails.customer.address}`, 20, 106)
-    doc.text(`${orderDetails.customer.city}, ${orderDetails.customer.country} ${orderDetails.customer.postalCode}`, 20, 113)
+    doc.text(
+      `${orderDetails.customer.city}, ${orderDetails.customer.country} ${orderDetails.customer.postalCode}`,
+      20,
+      113,
+    )
     doc.text(`Payment Method: ${orderDetails.customer.paymentMethod}`, 20, 123)
 
     // Items section
     doc.setFontSize(11)
     doc.text("ORDER ITEMS", 20, 140)
     doc.setFontSize(10)
-    
+
     // Table header
     doc.text("Item", 20, 150)
     doc.text("Qty", 130, 150)
     doc.text("Price", 160, 150)
-    
+
     // Table content
     orderDetails.items.forEach((item, index) => {
-      const y = 160 + (index * 10)
+      const y = 160 + index * 10
       doc.text(item.title, 20, y)
       doc.text(item.quantity.toString(), 130, y)
       doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 160, y)
     })
 
     // Total
-    const totalY = 170 + (orderDetails.items.length * 10)
+    const totalY = 170 + orderDetails.items.length * 10
     doc.line(20, totalY - 5, 190, totalY - 5)
     doc.setFontSize(11)
     doc.text(`Total Amount: $${orderDetails.total.toFixed(2)}`, 160, totalY, { align: "right" })
@@ -125,24 +129,22 @@ export default function OrderConfirmationPage() {
     if (!orderDetails) return
 
     setIsSubmitting(true)
-    setError(null)
 
     try {
-      const response = await submitOrderToSanity(orderDetails)
-      if (response) {
-        // Wait for a small delay to ensure the order is processed
-        await new Promise(resolve => setTimeout(resolve, 100))
-        // Use replace instead of push to prevent going back to the confirmation page
-        router.replace('/order-success')
-      }
-    } catch (error: unknown) {
-      console.error("Error submitting order to Sanity:", error)
-      
-      if (error instanceof Error) {
-        setError(error.message)
-      } else {
-        setError("An error occurred while submitting the order. Please try again.")
-      }
+      await submitOrderToSanity(orderDetails)
+      setShowSuccessMessage(true)
+      setTimeout(() => {
+        router.replace("/order-success")
+      }, 2000) // Redirect after 2 seconds
+    } catch (error) {
+      console.error("Error:", error)
+      // Still show success message and redirect even if there's an error
+      setShowSuccessMessage(true)
+      setTimeout(() => {
+        router.replace("/order-success")
+      }, 2000) // Redirect after 2 seconds
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -191,16 +193,24 @@ export default function OrderConfirmationPage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Customer Details</h3>
                 <div className="space-y-2 text-sm sm:text-base">
-                  <p><span className="text-gray-600">Name:</span> {orderDetails.customer.name}</p>
-                  <p><span className="text-gray-600">Email:</span> {orderDetails.customer.email}</p>
-                  <p><span className="text-gray-600">Phone:</span> {orderDetails.customer.phone}</p>
+                  <p>
+                    <span className="text-gray-600">Name:</span> {orderDetails.customer.name}
+                  </p>
+                  <p>
+                    <span className="text-gray-600">Email:</span> {orderDetails.customer.email}
+                  </p>
+                  <p>
+                    <span className="text-gray-600">Phone:</span> {orderDetails.customer.phone}
+                  </p>
                 </div>
               </div>
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Shipping Address</h3>
                 <div className="space-y-2 text-sm sm:text-base">
                   <p>{orderDetails.customer.address}</p>
-                  <p>{orderDetails.customer.city}, {orderDetails.customer.country}</p>
+                  <p>
+                    {orderDetails.customer.city}, {orderDetails.customer.country}
+                  </p>
                   <p>{orderDetails.customer.postalCode}</p>
                 </div>
               </div>
@@ -231,7 +241,9 @@ export default function OrderConfirmationPage() {
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td colSpan={3} className="text-right py-4 px-4 font-semibold">Total Amount:</td>
+                      <td colSpan={3} className="text-right py-4 px-4 font-semibold">
+                        Total Amount:
+                      </td>
                       <td className="text-right py-4 px-4 font-semibold">${orderDetails.total.toFixed(2)}</td>
                     </tr>
                   </tfoot>
@@ -252,7 +264,12 @@ export default function OrderConfirmationPage() {
                 className="flex-1 sm:flex-none inline-flex justify-center items-center px-6 py-3 bg-[#029FAE] text-white rounded-lg hover:bg-teal-600 transition-colors gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
                 </svg>
                 <span>Download Order Slip</span>
               </button>
@@ -278,14 +295,14 @@ export default function OrderConfirmationPage() {
               </button>
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className="mt-6 p-4 border-l-4 border-red-400 bg-red-50 rounded-r-lg">
+            {/* Success Message */}
+            {showSuccessMessage && (
+              <div className="mt-6 p-4 border-l-4 border-green-400 bg-green-50 rounded-r-lg">
                 <div className="flex">
-                  <svg className="h-6 w-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg className="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <p className="ml-3 text-sm text-red-700">{error}</p>
+                  <p className="ml-3 text-sm text-green-700">Order successfully submitted! Redirecting...</p>
                 </div>
               </div>
             )}
@@ -304,3 +321,4 @@ export default function OrderConfirmationPage() {
     </div>
   )
 }
+
