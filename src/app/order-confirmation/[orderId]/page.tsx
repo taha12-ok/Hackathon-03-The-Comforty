@@ -135,11 +135,14 @@ export default function OrderConfirmationPage() {
         // Use replace instead of push to prevent going back to the confirmation page
         router.replace('/order-success')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error submitting order to Sanity:", error)
-      setError(error.message || "An error occurred while submitting the order. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+      
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError("An error occurred while submitting the order. Please try again.")
+      }
     }
   }
 
